@@ -1,0 +1,288 @@
+# @title
+from IPython.display import display, HTML
+
+# Define the available topics and resources with URLs
+topics = [
+    "Rational Numbers", "Problem Solving", "Proportional Relationships", "Variables",
+    "Unknowns in Equations", "Geometric Vocabulary", "Coordinate Geometry", "Estimation and Measurement",
+    "Probability", "Analyzing Data", "Lab", "Scientific Method", "Force and Motion",
+    "Physical and Chemical Properties", "Matter", "Energy Transformation", "Living Systems",
+    "Genetics", "Ecosystems", "Solar System", "Earth Systems", "Grammar", "Influence of History",
+    "Geography and Environments", "Production and Economics", "Cultural Differences"
+]
+
+# Define the available subjects
+subject = ["Language Arts", "Mathematics", "Science", "Social Studies" ]
+
+
+resource_types = ["Text", "Video", "Exercise"]
+
+# Define HTML structure for the form
+html_form = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumos Study Helper</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
+        }}
+        .container {{
+            text-align: center;
+            width: 90%;
+            margin: auto;
+            background-color: #4471db;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+        }}
+        h1 {{
+            text-align: center;
+        }}
+        label {{
+            display: block;
+            margin: 10px 0 5px;
+        }}
+        select, button {{
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+        }}
+        button {{
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }}
+        button:hover {{
+            background-color: #45a049;
+        }}
+        .result {{
+            margin-top: 20px;
+            background-color: #335a82;
+            padding: 15px;
+            border-radius: 5px;
+            color: #ffffff;
+        }}
+    </style>
+</head>
+<body>
+
+<div class="container">
+        <h1>Lumos Study Helper</h1>
+        <p>I'm here to give you the best resources for your tests, or if you just want a refresher!</p>
+
+<form id="resourceForm">
+
+  <label for="subject">Subject:</label>
+    <select id="subject" name="subject">
+         {"".join([f"<option value='{subject}'>{subject}</option>" for subject in subject])}
+    </select>
+
+    <label for="topic">Topic:</label>
+    <select id="topic" name="topic">
+        {"".join([f"<option value='{topic}'>{topic}</option>" for topic in topics])}
+    </select>
+
+    <label for="resource">Resource Type:</label>
+    <select id="resource" name="resource">
+        {"".join([f"<option value='{resource}'>{resource}</option>" for resource in resource_types])}
+    </select>
+
+    <button type="button" onclick="getResource()">Get Resource</button>
+</form>
+
+<p id="result"></p>
+
+<script>
+    // Define available resources for each topic with URLs
+    var resources = {{
+        "Rational Numbers": {{
+        "Text": 'https://www.khanacademy.org/math/cc-eighth-grade-math/cc-8th-numbers-operations/cc-8th-irrational-numbers/a/classifying-numbers-review',
+        "Video": 'https://www.youtube.com/playlist?list=PLZtTs3tojrWIlOiEaquW-snwEC2KAJNZ_',
+        "Exercise": 'https://drive.google.com/drive/folders/1-9ueuA1cHmjXjl66i2gqlEfPhwO8t9vl?usp=share_link',
+    }},
+
+    "Problem Solving": {{
+        "Text": "https://www.khanacademy.org/math/cc-fifth-grade-math/imp-fractions-3/imp-adding-and-subtracting-fractions-with-unlike-denominators-word-problems/a/add-and-subtract-fractions-faq-2",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWK69fDwY0lGVh6WUZna8wVm",
+        "Exercise": "https://drive.google.com/drive/folders/1-FXz9GvlVCn7dm2ZJqLaEOjnDZsSEpmS?usp=share_link"
+    }},
+
+    "Proportional Relationships": {{
+        "Text": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic/intro-to-ratios/a/intro-to-ratios",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKYGsFTc0JttigGZ9YSeHYe",
+        "Exercise": "https://drive.google.com/drive/folders/1-ZtWt7fpDDPxutBR4S-V7TB-1wcy5tFC?usp=share_link"
+    }},
+
+    "Variables": {{
+        "Text": "https://www.khanacademy.org/math/cc-third-grade-math/3rd-perimeter/imp-comparing-area-and-perimeter/e/area-and-perimeter-scenarios",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLxhFiD5HiFgt5-0qGshAOg",
+        "Exercise": "https://drive.google.com/drive/folders/1-bLy32CnPHZts7rczb2xbi1Ob1YgxRZG?usp=share_link"
+    }},
+
+    "Unknowns in Equations": {{
+        "Text": "https://www.khanacademy.org/math/grade-6-math-tx/x3931b57772b927b3:one-variable-equations/x3931b57772b927b3:one-step-multiplication-division-equations/a/solving-one-step-multiplication-and-division-equations",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKX2_oIylXnOqyRcYY7nqEY",
+        "Exercise": "https://drive.google.com/drive/folders/1-f20qvHwHBa4nFBVpvsKj69cq7UHaH03?usp=share_link"
+    }},
+
+    "Geometric Vocabulary": {{
+        "Text": "https://www.khanacademy.org/math/6th-grade-matatag/xb8e22b8c4894c878:3rd-quarter/xb8e22b8c4894c878:parts-and-circumference-of-a-circle/a/gtp--praxis-math--article--circles--lesson",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLumjW4YzpjHxnztQqxNwdj",
+        "Exercise": "https://drive.google.com/drive/folders/1-ha1iRcJMHFYaucCR0E-UoBDW1NgXlKo?usp=share_link"
+    }},
+
+    "Coordinate Geometry": {{
+        "Text": "https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:coordinate-plane/cc-6th-coordinate-plane/a/graphing-coordinates-review",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKXvcsY4GKNOpOJhCW2MOPa",
+        "Exercise": "https://drive.google.com/drive/folders/1-m1-cv4-0A4vZ6p9ZQWYAxjpcUIi1zbG?usp=share_link"
+    }},
+
+    "Estimation and Measurement": {{
+        "Text": "https://www.khanacademy.org/math/cc-fourth-grade-math/imp-measurement-and-data-2/imp-converting-units-of-length/a/metric-units-of-length-review",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWIZ9qQ7QX5dSqxItURmGz2Z",
+        "Exercise": "https://drive.google.com/drive/folders/1-6Z92_-PyLlrCgNmAL3Wq4WMdLnzB91w?usp=share_link"
+    }},
+
+    "Probability": {{
+        "Text": "https://www.khanacademy.org/math/7th-grade-foundations-matatag/x1e2e8b1648d78e6f:data-probability/x1e2e8b1648d78e6f:probability/a/gtp--praxis-math--article--probability--lesson",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLegtSN83cd--cGKh4IykHY",
+        "Exercise": "https://drive.google.com/drive/folders/1--BUlXndgzoqFKzsTG2b--jVrMat8Sef?usp=share_link"
+    }},
+
+    "Analyzing Data": {{
+        "Text": "https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data/mean-median-basics/a/mean-median-and-mode-review",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKtuhkwNfnVTVap-ja-G69o",
+        "Exercise": "https://drive.google.com/drive/folders/18fyYrMM2-W5qL2ZG1miLc_Hv4e08_vN7?usp=share_link"
+    }},
+
+    "Lab": {{
+        "Text": "https://sciencebysinai.com/basic-supplies-you-need-in-your-science-classroom/",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLw6Uzd7guj2hLtNsttBO4P",
+        "Exercise": "https://quizlet.com/208495784/6th-grade-science-vocabulary-texas-flash-cards/"
+    }},
+
+    "Scientific Method": {{
+        "Text": "https://www.khanacademy.org/science/biology/intro-to-biology/science-of-biology/a/the-science-of-biology",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWIlwEWW8Bv08ZM3YEReDsLV",
+        "Exercise": "https://quizlet.com/13173223/6th-grade-scientific-method-flash-cards/"
+    }},
+
+    "Force and Motion": {{
+        "Text": "https://www.khanacademy.org/science/mechanics-essentials/xafb2c8d81b6e70e3:could-a-coin-dropped-from-a-tall-building-kill-you/xafb2c8d81b6e70e3:why-do-you-feel-heavier-in-a-lift-when-it-starts-moving-up/a/what-is-normal-force",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLMPnHnvRFgd8KodspuvYq4",
+        "Exercise": "https://quizlet.com/9097976/6th-grade-force-and-motion-flash-cards/"
+    }},
+
+    "Physical and Chemical Properties": {{
+        "Text": "https://chemistrytalk.org/physical-vs-chemical-properties/",
+        "Video": "https://www.youtube.com/watch?v=8uAca9uKvPk",
+        "Exercise": "https://quizlet.com/358606582/lewis-6th-grade-physical-chemical-properties-changes-ganguli-flash-cards/"
+    }},
+
+    "Matter": {{
+        "Text": "https://www.khanacademy.org/science/ap-biology/chemistry-of-life/elements-of-life/a/matter-elements-atoms-article",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKkGEtdndJkjUHFg0lQ9Bsd",
+        "Exercise": "https://quizlet.com/3330026/6th-grade-matter-review-flash-cards/"
+    }},
+
+    "Energy Transformation": {{
+        "Text": "https://education.nationalgeographic.org/resource/energy-transformation-how-does-it-do/",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLK-transforming_energy_videos",
+        "Exercise": "https://quizlet.com/351799940/6th-grade-science-energy-transformations-flash-cards/"
+    }},
+
+    "Living Systems": {{
+        "Text": "https://kids.britannica.com/students/article/living-things/275509",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKOQmybYPH0arIywgAuRf-Q",
+        "Exercise": "https://quizlet.com/ca/838740036/living-systems-grade-6-ab-flash-cards/"
+    }},
+
+    "Genetics": {{
+        "Text": "https://kids.britannica.com/kids/article/genetics/353170",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKRuA7vpKz6F15aiQ0bj6gq",
+        "Exercise": "https://quizlet.com/9009780/sixth-grade-genetics-flash-cards/"
+    }},
+
+    "Ecosystems": {{
+        "Text": "https://www.khanacademy.org/science/biology/ecology/intro-to-ecosystems/a/what-is-an-ecosystem",
+        "Video": "https://www.youtube.com/watch?v=fEd9HKC0tAo",
+        "Exercise": "https://quizlet.com/293871481/6th-grade-ecosystems-test-review-flash-cards/"
+    }},
+
+    "Solar System": {{
+        "Text": "https://www.britannica.com/science/solar-system",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWJ54wCqGlv1zn-7O4T0aLrK",
+        "Exercise": "https://quizlet.com/688910625/solar-system-review-6th-grade-science-flash-cards/"
+    }},
+
+    "Earth Systems": {{
+        "Text": "https://education.nationalgeographic.org/resource/earths-systems/",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWLGwlBS6_T9xYnwWQEcKdOv",
+        "Exercise": "https://quizlet.com/2234410/earth-systems-6th-grade-science-flash-cards/"
+    }},
+       "Grammar": {{
+            "Text": "https://www.akronschools.org/Page/4027",
+        "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWL-swK70mTFw6OMEhK6iArn",
+        "Exercise": "https://drive.google.com/drive/folders/100oqispREqg4MPrlv-TRFF5PEwJf53aR?usp=share_link"
+    }},
+       "Influence of History": {{
+           "Text": "https://www.history.com/news/christopher-columbus-ships-caravels",
+           "Video": "https://www.youtube.com/watch?v=TAXo6ad9__Y",
+           "Exercise": "https://quizlet.com/903031421/geography-and-environment-flash-cards/"
+       }},
+       "Geography and Environments":{{
+           "Text": "https://www.britannica.com/place/Tigris-Euphrates-river-system",
+           "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKNiDuAXXKM3zQ0vpf5_bpZ",
+           "Exercise": "https://quizlet.com/903031421/geography-and-environment-flash-cards/"
+     }},
+       "Production and Economics":{{
+           "Text":"https://www.britannica.com/event/Great-Depression",
+           "Video":"https://www.youtube.com/playlist?list=PLZtTs3tojrWKdGG8NZLoFaggZdvDEs8gb",
+           "Exercise": "https://quizlet.com/142708350/economics-production-flash-cards/"
+     }},
+
+       "Cultural Differences":{{
+           "Text": "https://guides.lib.jjay.cuny.edu/c.php?g=288398&p=4496620",
+           "Video": "https://www.youtube.com/playlist?list=PLZtTs3tojrWKjmjqvQ1mkSWO-w14ZjN0j",
+           "Exercise":"https://quizlet.com/62859139/civil-war-and-its-aftermath-flash-cards/"
+       }},
+    }};
+
+    // Function to handle the button click
+function getResource() {{
+    // Get the values from the form
+    var topic = document.getElementById("topic").value;
+    var resource = document.getElementById("resource").value;
+
+    // Check if the selected resource type is available for the selected topic
+    var availableResources = resources[topic];
+
+    if (availableResources && availableResources[resource]) {{
+        var resourceContent = availableResources[resource];
+        // Display the raw HTML content of the resource
+        document.getElementById("result").innerHTML = `
+            <div>
+                <h3>${{topic}} - ${{resource}}</h3>
+                <pre style="background-color: #fffff; padding: 10px; border-radius: 5px;">${{resourceContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</pre>
+            </div>
+        `;
+    }} else {{
+        document.getElementById("result").innerHTML = "Sorry, no resources available for this selection.";
+    }}
+}}
+
+</script>
+
+</body>
+</html>
+"""
